@@ -6,7 +6,7 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:59:15 by inazaria          #+#    #+#              #
-#    Updated: 2024/07/20 20:36:55 by inazaria         ###   ########.fr        #
+#    Updated: 2024/07/20 20:42:04 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@
 .cache/
 
 # Project Related files
+philo
 build/*.d
 build/*.o
 vgcore*
