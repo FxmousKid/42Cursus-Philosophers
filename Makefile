@@ -6,34 +6,52 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:41:21 by inazaria          #+#    #+#              #
-#    Updated: 2024/07/27 00:37:36 by inazaria         ###   ########.fr        #
+#    Updated: 2024/08/12 20:33:46 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# Directories & Files
-SRC_DIR = ./src/
-BUILD_DIR = ./build/
-INC_DIR = ./includes/
+#<><><><><><><> Files <><><><><><><><><><><><><><><><><><><>
+SRC_DIR 	= ./src/
+OUT_SRC_DIR = ./build/helper/ ./build/error_manager/
 
-SRC_FILES = $(wildcard $(SRC_DIR)*.c)
+BUILD_DIR 	= ./build/
+INC_DIR 	= ./includes/
+
+DEBUG_FILE_PATH = ./src/error_manager/debugging_functions
+DEBUG_BUILD_PATH = ./build/error_manager/debugging_functions
+
+# .c files for source code
+SRC_FILES_NAMES = philosophers.c
+SRC_FILES_NAMES += helper/printf_colors.c
+SRC_FILES_NAMES += helper/helper_functions.c
+SRC_FILES_NAMES += error_manager/error_manager.c
+
+# Full path to .c files
+SRC_FILES = $(addprefix $(SRC_DIR), $(SRC_FILES_NAMES))
+
+# .o files for compilation
 OBJ_FILES = $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.o, $(SRC_FILES))
+
+# .d files for header dependency
 DEP_FILES = $(patsubst $(SRC_DIR)%.c, $(BUILD_DIR)%.d, $(SRC_FILES))
 
 
-# Variables
+#<><><><><><><> Variables <><><><><><><><><><><><><><><><><>
+
 NAME := philo
 CC := clang
-CFLAGS := -Wall -Wextra -Werror -I $(INC_DIR) -MMD -MP
-RM := rm -f
+CFLAGS := -g3 -Wall -Wextra -Werror -I $(INC_DIR) -MMD -MP
+MKDIR := mkdir -p
 
 BLUE	:= $(shell echo -e "\033[34m") 
 BROWN	:= $(shell echo -e "\033[33m")
 GREEN	:= $(shell echo -e "\033[32m")
 NC		:= $(shell echo -e "\033[0m")
+RED		:= $(shell echo -e "\033[31m")
 
-all : $(NAME)
+#<><><><><><><> Recipes <><><><><><><><><><><><><><><><><><>
 
-# Modifying Implicit conversion rules
+# Modifying Implicit conversion rules to build in custom directory
 $(BUILD_DIR)%.o : $(SRC_DIR)%.c
 	@echo -e "$(BLUE)[CMP] Compiling $<...$(NC)"
 	@$(CC) -c $(CFLAGS) $< -o $@ 
@@ -41,23 +59,36 @@ $(BUILD_DIR)%.o : $(SRC_DIR)%.c
 # This is to add the .d files as dependencies for linking
 -include $(DEP_FILES)
 
-# Rules
+all : create_build_dirs $(NAME)
 
-re : fclean $(NAME)
+re : clean all
+
+create_build_dirs :
+	@$(MKDIR) $(BUILD_DIR)
+	@$(MKDIR) $(OUT_SRC_DIR)
 
 $(NAME) : $(OBJ_FILES)
 	@echo -e "$(BROWN)[BLD] Building executable...$(NC)"
-	@$(CC) $(CFLAGS) $^ -o $(NAME)
+	@$(RM) $(DEBUG_BUILD_PATH)
+	@$(RM) $(NAME)
+	@$(CC) $(CFLAGS) -c $(DEBUG_FILE_PATH).c -o $(DEBUG_BUILD_PATH).o
+	@$(CC) $(CFLAGS) $^ $(DEBUG_BUILD_PATH).o -o $(NAME)
+	@echo -e "$(GREEN)[BLD] Executable built successfully.$(NC)"
+
+debug : $(OBJ_FILES)
+	@echo -e "$(RED)[DBG] Making in DEBUG MODE...$(NC)"
+	@$(RM) $(DEBUG_BUILD_PATH)
+	@$(CC) $(CFLAGS) -D DEBUG -c $(DEBUG_FILE_PATH).c -o $(DEBUG_BUILD_PATH).o
+	@echo -e "$(BROWN)[BLD] Building executable...$(NC)"
+	@$(CC) $(CFLAGS) $(OBJ_FILES) $(DEBUG_BUILD_PATH).o -o $(NAME)
 	@echo -e "$(GREEN)[BLD] Executable built successfully.$(NC)"
 
 clean : 
 	@echo -e "$(BROWN)[CLN] Cleaning object and dependency files...$(NC)"
-	@$(RM) $(DEP_FILES) $(OBJ_FILES)
+	@$(RM) $(DEP_FILES) $(OBJ_FILES) $(DEBUG_BUILD_PATH).[od]
 	@echo -e "$(GREEN)[CLN] Clean complete.$(NC)"
 
 fclean : 
 	@echo -e "$(BROWN)[CLN] Cleaning object, dependency files, and executable...$(NC)"
-	@$(RM) $(DEP_FILES) $(OBJ_FILES) $(NAME)
+	@$(RM) -r $(BUILD_DIR)/* $(NAME)
 	@echo -e "$(GREEN)[CLN] Clean complete.$(NC)"
-
-
