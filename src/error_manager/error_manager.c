@@ -6,7 +6,7 @@
 /*   By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/26 23:32:42 by inazaria          #+#    #+#             */
-/*   Updated: 2024/07/27 00:41:07 by inazaria         ###   ########.fr       */
+/*   Updated: 2024/08/08 16:28:33 by inazaria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,24 +28,24 @@ int		check_args(char **argv)
 void	handle_invalid_argc(void)
 {
 	printf_clr("red");
-	printf("Invalid argument count of ./philosophers\n");
+	printf("Invalid argument count of ./philo\n");
 	printf_clr("reset");
 	printf("Usage : ");
 	printf_clr("yellow");
-	printf("./philosophers <number_of_philosophers time_to_die time_to_eat \
-	time_to_sleep>\n");
+	printf("./philo <number_of_philosophers time_to_die time_to_eat \
+time_to_sleep>\n");
 	printf_clr("reset");
 }
 
 void	handle_invalid_argv(void)
 {
 	printf_clr("red");
-	printf("Invalid argument count of ./philosophers\n");
+	printf("Invalid argument count of ./philo\n");
 	printf_clr("reset");
 	printf("Usage : ");
 	printf_clr("yellow");
-	printf("./philosophers <number_of_philosophers time_to_die time_to_eat \
-	time_to_sleep>\n\n");
+	printf("./philo <number_of_philosophers time_to_die time_to_eat \
+time_to_sleep>\n\n");
 	printf_clr("yellow");
 	printf("number_of_philosophers : ");
 	printf_clr("reset");
@@ -64,11 +64,21 @@ void	handle_invalid_argv(void)
 	printf("1 < n < 10000\n");
 }
 
+void	philosopher_failed_msg(void)
+{
+	printf_clr("red");
+	printf("Philosophers Failed...\n");
+	printf_clr("reset");
+}
+
 void	print_exited_with_code(int code)
 {
 	printf_clr("bold");
 	printf("Exited with code : ");
-	printf_clr("red");
+	if (code == 0)
+		printf_clr("green");
+	else
+		printf_clr("red");
 	printf("%d\n", code);
 	printf_clr("reset");
 }

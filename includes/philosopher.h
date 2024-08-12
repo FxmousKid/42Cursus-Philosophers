@@ -6,7 +6,7 @@
 /*   By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 21:06:01 by inazaria          #+#    #+#             */
-/*   Updated: 2024/07/27 00:31:11 by inazaria         ###   ########.fr       */
+/*   Updated: 2024/08/07 13:00:37 by inazaria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,10 +36,12 @@
 
 
 // Error Handling 
+void	ft_debug(char *str);
 void	printf_clr(char *str);
+int		check_args(char **argv);
 void	handle_invalid_argc(void);
 void	handle_invalid_argv(void);
-int		check_args(char **argv);
+void	philosopher_failed_msg(void);
 void	print_exited_with_code(int code);
 
 // Utils
