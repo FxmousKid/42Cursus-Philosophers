@@ -6,7 +6,7 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:41:21 by inazaria          #+#    #+#              #
-#    Updated: 2024/08/13 15:57:43 by inazaria         ###   ########.fr        #
+#    Updated: 2024/08/13 17:32:00 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,9 +51,13 @@ RED		:= $(shell echo -e "\033[31m")
 
 #<><><><><><><> Recipes <><><><><><><><><><><><><><><><><><>
 
+create_build_dirs : 
+	@echo -e "$(BROWN)[MKD] Creating build directories...$(NC)"
+	@$(MKDIR) $(BUILD_DIR)
+	@$(MKDIR) $(OUT_SRC_DIR)
 
 # Modifying Implicit conversion rules to build in custom directory
-$(BUILD_DIR)%.o : $(SRC_DIR)%.c
+$(BUILD_DIR)%.o : $(SRC_DIR)%.c | create_build_dirs
 	@echo -e "$(BLUE)[CMP] Compiling $<...$(NC)"
 	@$(CC) -c $(CFLAGS) $< -o $@ 
 
@@ -62,14 +66,10 @@ $(BUILD_DIR)%.o : $(SRC_DIR)%.c
 -include $(DEP_FILES) $(DEBUG_BUILD_PATH).d
 
 
-
 re : clean all
 
-create_build_dirs :
-	@$(MKDIR) $(BUILD_DIR)
-	@$(MKDIR) $(OUT_SRC_DIR)
 
-$(NAME) : $(OBJ_FILES) | create_build_dirs
+$(NAME) : $(OBJ_FILES)
 	@echo -e "$(BROWN)[BLD] Building executable...$(NC)"
 	@$(RM) $(DEBUG_BUILD_PATH)
 	@$(RM) $(NAME)
@@ -77,7 +77,7 @@ $(NAME) : $(OBJ_FILES) | create_build_dirs
 	@$(CC) $(CFLAGS) $^ $(DEBUG_BUILD_PATH).o -o $(NAME)
 	@echo -e "$(GREEN)[BLD] Executable built successfully.$(NC)"
 
-all : $(NAME)
+all : create_build_dirs $(NAME) 
 
 debug : $(OBJ_FILES)
 	@echo -e "$(RED)[DBG] Making in DEBUG MODE...$(NC)"
