@@ -6,7 +6,7 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:41:21 by inazaria          #+#    #+#              #
-#    Updated: 2024/08/13 17:32:00 by inazaria         ###   ########.fr        #
+#    Updated: 2024/08/13 18:47:45 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,6 +42,7 @@ NAME := philo
 CC := clang
 CFLAGS := -g3 -Wall -Wextra -Werror -I $(INC_DIR) -MMD -MP
 MKDIR := mkdir -p
+RM_RF := rm -rf
 
 BLUE	:= $(shell echo -e "\033[34m") 
 BROWN	:= $(shell echo -e "\033[33m")
@@ -57,7 +58,8 @@ create_build_dirs :
 	@$(MKDIR) $(OUT_SRC_DIR)
 
 # Modifying Implicit conversion rules to build in custom directory
-$(BUILD_DIR)%.o : $(SRC_DIR)%.c | create_build_dirs
+$(BUILD_DIR)%.o : $(SRC_DIR)%.c
+	@$(MKDIR) $(dir $@)
 	@echo -e "$(BLUE)[CMP] Compiling $<...$(NC)"
 	@$(CC) -c $(CFLAGS) $< -o $@ 
 
@@ -77,7 +79,7 @@ $(NAME) : $(OBJ_FILES)
 	@$(CC) $(CFLAGS) $^ $(DEBUG_BUILD_PATH).o -o $(NAME)
 	@echo -e "$(GREEN)[BLD] Executable built successfully.$(NC)"
 
-all : create_build_dirs $(NAME) 
+all : $(NAME) 
 
 debug : $(OBJ_FILES)
 	@echo -e "$(RED)[DBG] Making in DEBUG MODE...$(NC)"
@@ -94,7 +96,7 @@ clean :
 
 fclean : 
 	@echo -e "$(BROWN)[CLN] Cleaning object, dependency files, and executable...$(NC)"
-	@$(RM) -r $(BUILD_DIR)/* $(NAME)
+	@$(RM_RF) $(BUILD_DIR) $(NAME)
 	@echo -e "$(GREEN)[CLN] Clean complete.$(NC)"
 
 
