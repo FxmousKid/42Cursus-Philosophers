@@ -6,27 +6,52 @@
 /*   By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 19:54:57 by inazaria          #+#    #+#             */
-/*   Updated: 2024/08/12 17:06:14 by inazaria         ###   ########.fr       */
+/*   Updated: 2024/08/13 16:03:53 by inazaria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 #include <pthread.h>
 
-void*	routine(void *arg1)
+int mails = 0;
+pthread_mutex_t mutex;
+
+
+void*	routine()
 {
-	long sum = *((long *) arg1);
-	printf("sum is the number : %ld\n", sum);
+	for (int i = 0; i < 10000; i++)
+	{
+		
+		mails++;
+	}
+
 	return NULL;
 }
 
 int	philosophers(char **argv)
 {
 	(void) argv;
-	printf("Philo all is good !\n");
+
+	pthread_t t1;
+	pthread_t t2;
+
+	if (!pthread_mutex_init(&mutex, NULL))
+		return (ft_debug(DEBUG_LINE_FILE("to create mutex")));	
+
+
+	pthread_create(&t1, NULL, &routine, NULL);
+	pthread_create(&t2, NULL, &routine, NULL);
+
+	pthread_join(t1, NULL);
+	pthread_join(t2, NULL);
+
+
+	printf("total mails: %d\n", mails);
 
 	return (1);
 }
+
+
 
 int main(int argc, char *argv[])
 {
@@ -51,10 +76,6 @@ int main(int argc, char *argv[])
 		print_exited_with_code(1);
 		return (1);	
 	}
-
-
-	ft_debug("this is a error !\n");
-	
 
 	printf("\n");
 	print_exited_with_code(0);
