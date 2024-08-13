@@ -6,7 +6,7 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:41:21 by inazaria          #+#    #+#              #
-#    Updated: 2024/08/12 20:33:46 by inazaria         ###   ########.fr        #
+#    Updated: 2024/08/13 15:57:43 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,15 +51,17 @@ RED		:= $(shell echo -e "\033[31m")
 
 #<><><><><><><> Recipes <><><><><><><><><><><><><><><><><><>
 
+
 # Modifying Implicit conversion rules to build in custom directory
 $(BUILD_DIR)%.o : $(SRC_DIR)%.c
 	@echo -e "$(BLUE)[CMP] Compiling $<...$(NC)"
 	@$(CC) -c $(CFLAGS) $< -o $@ 
 
-# This is to add the .d files as dependencies for linking
--include $(DEP_FILES)
 
-all : create_build_dirs $(NAME)
+# This is to add the .d files as dependencies for linking
+-include $(DEP_FILES) $(DEBUG_BUILD_PATH).d
+
+
 
 re : clean all
 
@@ -67,13 +69,15 @@ create_build_dirs :
 	@$(MKDIR) $(BUILD_DIR)
 	@$(MKDIR) $(OUT_SRC_DIR)
 
-$(NAME) : $(OBJ_FILES)
+$(NAME) : $(OBJ_FILES) | create_build_dirs
 	@echo -e "$(BROWN)[BLD] Building executable...$(NC)"
 	@$(RM) $(DEBUG_BUILD_PATH)
 	@$(RM) $(NAME)
 	@$(CC) $(CFLAGS) -c $(DEBUG_FILE_PATH).c -o $(DEBUG_BUILD_PATH).o
 	@$(CC) $(CFLAGS) $^ $(DEBUG_BUILD_PATH).o -o $(NAME)
 	@echo -e "$(GREEN)[BLD] Executable built successfully.$(NC)"
+
+all : $(NAME)
 
 debug : $(OBJ_FILES)
 	@echo -e "$(RED)[DBG] Making in DEBUG MODE...$(NC)"
@@ -92,3 +96,7 @@ fclean :
 	@echo -e "$(BROWN)[CLN] Cleaning object, dependency files, and executable...$(NC)"
 	@$(RM) -r $(BUILD_DIR)/* $(NAME)
 	@echo -e "$(GREEN)[CLN] Clean complete.$(NC)"
+
+
+.DEFAULT_GOAL := all
+.PHONY : all clean fclean re debug
