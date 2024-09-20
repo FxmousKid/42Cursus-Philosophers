@@ -1,84 +1,74 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.c                                     :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 19:54:57 by inazaria          #+#    #+#             */
-/*   Updated: 2024/08/13 18:49:34 by inazaria         ###   ########.fr       */
+/*   Updated: 2024/09/20 19:59:06 by inazaria         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
-#include <pthread.h>
-
-int mails = 0;
-pthread_mutex_t mutex;
+#include <stdbool.h>
 
 
-void*	routine()
+
+bool	start_philosophers(t_data *data)
 {
-	for (int i = 0; i < 10000; i++)
+	int	i;
+
+	i = 0;
+	while (i < data->total_philo)
 	{
-		
-		mails++;
+		if (pthread_create(&data->philos[i].thread, NULL, simulate_philo, 
+			&data->philos[i]) != 0)
+			return (debug(DBG("Failed to pthread_create()")), false) ;	
+		i++;
 	}
 
-	return NULL;
+	return (true);
 }
 
-int	philosophers(char **argv)
+bool	philosophers(char **argv)
 {
-	(void) argv;
+	t_data	data;
 
-	pthread_t t1;
-	pthread_t t2;
-
-	if (!pthread_mutex_init(&mutex, NULL))
-		return (ft_debug(DEBUG_LINE_FILE("to create mutex")));	
-
-
-	pthread_create(&t1, NULL, &routine, NULL);
-	pthread_create(&t2, NULL, &routine, NULL);
-
-	pthread_join(t1, NULL);
-	pthread_join(t2, NULL);
-
-
-	printf("total mails: %d\n", mails);
-
-	return (1);
+	ft_bzero(&data, sizeof(data));
+	if (!init_philosophers(&data, argv))
+	{
+		destroy_data(&data);
+		debug(DBG("Failed to init_philosophers()"));
+		return (false);
+	}
+	if (!start_philosophers(&data))
+	{
+		destroy_data(&data);
+		debug(DBG("Failed to start_philosophers()"));
+		return (false);
+	}
+	destroy_data(&data);
+	return (true);
 }
-
-
 
 int main(int argc, char *argv[])
 {
 	if (argc != 5)
 	{
 		handle_invalid_argc();
-		printf("\n");
-		print_exited_with_code(1);
 		return (1);
 	}
 	if (!check_args(argv))
 	{
 		handle_invalid_argv();
-		printf("\n");
-		print_exited_with_code(1);
 		return (1);
 	}
 	if (!philosophers(argv))
 	{
 		philosopher_failed_msg();
-		printf("\n");
-		print_exited_with_code(1);
 		return (1);	
 	}
-
-	printf("\n");
-	print_exited_with_code(0);
 	return (0);
 }
 

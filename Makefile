@@ -6,13 +6,12 @@
 #    By: inazaria <inazaria@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/18 19:41:21 by inazaria          #+#    #+#              #
-#    Updated: 2024/08/13 18:47:45 by inazaria         ###   ########.fr        #
+#    Updated: 2024/09/20 19:07:54 by inazaria         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 #<><><><><><><> Files <><><><><><><><><><><><><><><><><><><>
 SRC_DIR 	= ./src/
-OUT_SRC_DIR = ./build/helper/ ./build/error_manager/
 
 BUILD_DIR 	= ./build/
 INC_DIR 	= ./includes/
@@ -21,10 +20,13 @@ DEBUG_FILE_PATH = ./src/error_manager/debugging_functions
 DEBUG_BUILD_PATH = ./build/error_manager/debugging_functions
 
 # .c files for source code
-SRC_FILES_NAMES = philosophers.c
-SRC_FILES_NAMES += helper/printf_colors.c
-SRC_FILES_NAMES += helper/helper_functions.c
+SRC_FILES_NAMES = main.c
+SRC_FILES_NAMES += simulate_philo_life.c
+SRC_FILES_NAMES += utils/helper_functions.c
+SRC_FILES_NAMES += utils/init_philosophers.c
 SRC_FILES_NAMES += error_manager/error_manager.c
+SRC_FILES_NAMES += error_manager/destroy_philosophers.c
+
 
 # Full path to .c files
 SRC_FILES = $(addprefix $(SRC_DIR), $(SRC_FILES_NAMES))
@@ -52,11 +54,6 @@ RED		:= $(shell echo -e "\033[31m")
 
 #<><><><><><><> Recipes <><><><><><><><><><><><><><><><><><>
 
-create_build_dirs : 
-	@echo -e "$(BROWN)[MKD] Creating build directories...$(NC)"
-	@$(MKDIR) $(BUILD_DIR)
-	@$(MKDIR) $(OUT_SRC_DIR)
-
 # Modifying Implicit conversion rules to build in custom directory
 $(BUILD_DIR)%.o : $(SRC_DIR)%.c
 	@$(MKDIR) $(dir $@)
@@ -72,8 +69,8 @@ re : clean all
 
 
 $(NAME) : $(OBJ_FILES)
-	@echo -e "$(BROWN)[BLD] Building executable...$(NC)"
-	@$(RM) $(DEBUG_BUILD_PATH)
+	@echo -e "$(BROWN)[BLD] Building Philosopher executable...$(NC)"
+	@$(RM) $(DEBUG_BUILD_PATH).[od]
 	@$(RM) $(NAME)
 	@$(CC) $(CFLAGS) -c $(DEBUG_FILE_PATH).c -o $(DEBUG_BUILD_PATH).o
 	@$(CC) $(CFLAGS) $^ $(DEBUG_BUILD_PATH).o -o $(NAME)
